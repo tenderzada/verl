@@ -1,22 +1,75 @@
-set -x
+#!/bin/bash
+# GRPO训练脚本 - 解决HF验证问题的包装器
 
-# 设置环境变量以使用本地模型
+set -e
+
+echo "=================================="
+echo "  Qwen2.5-1.5B GRPO训练"
+echo "=================================="
+echo ""
+
+# ============ 关键环境变量 ============
+# 完全禁用HuggingFace Hub验证
 export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
 export HF_DATASETS_OFFLINE=1
+export DISABLE_TELEMETRY=1
 
+# 禁用符号链接警告
+export HF_HUB_DISABLE_SYMLINKS_WARNING=1
+
+# 强制使用本地文件
+export TRANSFORMERS_NO_ADVISORY_WARNINGS=1
+
+echo "环境变量已设置:"
+echo "  HF_HUB_OFFLINE=1"
+echo "  TRANSFORMERS_OFFLINE=1"
+echo ""
+
+# ============ 路径检查 ============
+MODEL_PATH="/mnt/data/Qwen/Qwen2.5-1.5B-Instruct"
+TRAIN_DATA="/mnt/data/GSM8K/train.parquet"
+VAL_DATA="/mnt/data/GSM8K/test.parquet"
+
+echo "检查路径..."
+if [ ! -d "$MODEL_PATH" ]; then
+    echo "错误: 模型目录不存在: $MODEL_PATH"
+    exit 1
+fi
+echo "✓ 模型路径: $MODEL_PATH"
+
+if [ ! -f "$TRAIN_DATA" ]; then
+    echo "错误: 训练数据不存在: $TRAIN_DATA"
+    exit 1
+fi
+echo "✓ 训练数据: $TRAIN_DATA"
+
+if [ ! -f "$VAL_DATA" ]; then
+    echo "错误: 验证数据不存在: $VAL_DATA"
+    exit 1
+fi
+echo "✓ 验证数据: $VAL_DATA"
+
+echo ""
+echo "开始训练..."
+echo "=================================="
+echo ""
+
+set -x
+
+# 运行训练
 python3 -m verl.trainer.main_ppo \
     algorithm.adv_estimator=grpo \
     trainer.val_before_train=False \
-    data.train_files=/mnt/data/GSM8K/train.parquet \
-    data.val_files=/mnt/data/GSM8K/test.parquet \
+    data.train_files=${TRAIN_DATA} \
+    data.val_files=${VAL_DATA} \
     data.train_batch_size=16 \
     data.max_prompt_length=512 \
     data.max_response_length=1024 \
     data.filter_overlong_prompts=True \
     data.truncation='error' \
     data.shuffle=False \
-    actor_rollout_ref.model.path=/mnt/data/Qwen/Qwen2.5-1.5B-Instruct \
+    actor_rollout_ref.model.path=${MODEL_PATH} \
     actor_rollout_ref.model.trust_remote_code=True \
     actor_rollout_ref.model.lora_rank=64 \
     actor_rollout_ref.model.lora_alpha=32 \
@@ -43,15 +96,10 @@ python3 -m verl.trainer.main_ppo \
     algorithm.use_kl_in_reward=False \
     trainer.critic_warmup=0 \
     trainer.logger='["console","wandb"]' \
-    trainer.project_name='verl_grpo_example_gsm8k' \
-    trainer.experiment_name='qwen2.5_1.5b_grpo_lora' \
+    trainer.project_name='verl_grpo_qwen2.5_1.5b' \
+    trainer.experiment_name='grpo_lora_local' \
     trainer.n_gpus_per_node=2 \
     trainer.nnodes=1 \
     trainer.save_freq=20 \
     trainer.test_freq=5 \
-    trainer.total_epochs=15 $@
-
-    # actor_rollout_ref.actor.ppo_mini_batch_size=256 \
-    # data.train_batch_size=1024 \
-    # trainer.n_gpus_per_node=8 \
-    # actor_rollout_ref.model.use_shm=True \
+    trainer.total_epochs=15 "$@"

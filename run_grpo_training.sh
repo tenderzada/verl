@@ -111,6 +111,6 @@ python3 -m verl.trainer.main_ppo \
     trainer.default_local_dir='/mnt/data/verl/checkpoints' \
     trainer.n_gpus_per_node=2 \
     trainer.nnodes=1 \
-    trainer.save_freq=50 \
+    trainer.save_freq=9999 \
     trainer.test_freq=10 \
     trainer.total_epochs=15 "$@" 2>&1 | tee /mnt/data/verl/logs/training_$(date +%Y%m%d_%H%M%S).log

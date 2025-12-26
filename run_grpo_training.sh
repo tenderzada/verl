@@ -27,7 +27,7 @@ echo "  TRANSFORMERS_OFFLINE=1"
 echo ""
 
 # ============ 路径检查 ============
-MODEL_PATH="/mnt/data/Qwen/Qwen2.5-1.5B-Instruct"
+MODEL_PATH="/mnt/data/Qwen2.5-1.5B-Instruct"
 TRAIN_DATA="/mnt/data/GSM8K/train.parquet"
 VAL_DATA="/mnt/data/GSM8K/test.parquet"
 

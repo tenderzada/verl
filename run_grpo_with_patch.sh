@@ -15,7 +15,7 @@ export HF_DATASETS_OFFLINE=1
 export PYTHONPATH=/home/user/verl:$PYTHONPATH
 
 # 路径配置
-MODEL_PATH="/mnt/data/Qwen/Qwen2.5-1.5B-Instruct"
+MODEL_PATH="/mnt/data/Qwen2.5-1.5B-Instruct"
 TRAIN_DATA="/mnt/data/GSM8K/train.parquet"
 VAL_DATA="/mnt/data/GSM8K/test.parquet"
 

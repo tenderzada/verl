@@ -15,6 +15,15 @@ export TRANSFORMERS_OFFLINE=1
 export HF_DATASETS_OFFLINE=1
 export DISABLE_TELEMETRY=1
 
+# 设置输出目录
+export VERL_OUTPUT_DIR=/mnt/data/verl
+export WANDB_DIR=/mnt/data/verl/wandb
+
+# 创建输出目录
+mkdir -p /mnt/data/verl/checkpoints
+mkdir -p /mnt/data/verl/logs
+mkdir -p /mnt/data/verl/wandb
+
 # 禁用符号链接警告
 export HF_HUB_DISABLE_SYMLINKS_WARNING=1
 
@@ -99,9 +108,9 @@ python3 -m verl.trainer.main_ppo \
     trainer.logger='["console","wandb"]' \
     trainer.project_name='verl_grpo_qwen2.5_1.5b' \
     trainer.experiment_name='grpo_lora_local' \
-    trainer.default_local_dir='/home/user/verl/checkpoints' \
+    trainer.default_local_dir='/mnt/data/verl/checkpoints' \
     trainer.n_gpus_per_node=2 \
     trainer.nnodes=1 \
     trainer.save_freq=50 \
     trainer.test_freq=10 \
-    trainer.total_epochs=15 "$@"
+    trainer.total_epochs=15 "$@" 2>&1 | tee /mnt/data/verl/logs/training_$(date +%Y%m%d_%H%M%S).log

@@ -5,6 +5,12 @@ export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
 export HF_DATASETS_OFFLINE=1
 
+# 设置输出目录
+export WANDB_DIR=/mnt/data/verl/wandb
+mkdir -p /mnt/data/verl/checkpoints
+mkdir -p /mnt/data/verl/logs
+mkdir -p /mnt/data/verl/wandb
+
 python3 -m verl.trainer.main_ppo \
     algorithm.adv_estimator=grpo \
     trainer.val_before_train=False \
@@ -46,11 +52,12 @@ python3 -m verl.trainer.main_ppo \
     trainer.logger='["console","wandb"]' \
     trainer.project_name='verl_grpo_example_gsm8k' \
     trainer.experiment_name='qwen2.5_1.5b_grpo_lora' \
+    trainer.default_local_dir='/mnt/data/verl/checkpoints' \
     trainer.n_gpus_per_node=2 \
     trainer.nnodes=1 \
     trainer.save_freq=20 \
     trainer.test_freq=5 \
-    trainer.total_epochs=15 $@
+    trainer.total_epochs=15 $@ 2>&1 | tee /mnt/data/verl/logs/training_$(date +%Y%m%d_%H%M%S).log
 
     # actor_rollout_ref.actor.ppo_mini_batch_size=256 \
     # data.train_batch_size=1024 \

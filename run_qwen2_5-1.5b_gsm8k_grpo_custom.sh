@@ -13,8 +13,8 @@ set -x
 MODEL_PATH=/mnt/data/Qwen2.5-1.5B-Instruct
 
 # 数据路径（处理后的parquet文件）
-TRAIN_DATA=$HOME/data/gsm8k/train.parquet
-VAL_DATA=$HOME/data/gsm8k/test.parquet
+TRAIN_DATA=/mnt/data/GSM8K/main/train-00000-of-00001.parquet
+VAL_DATA=/mnt/data/GSM8K/main/test-00000-of-00001.parquet
 
 # ============ 环境检查 ============
 # 检查模型是否存在

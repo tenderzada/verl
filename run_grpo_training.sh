@@ -99,8 +99,9 @@ python3 -m verl.trainer.main_ppo \
     trainer.logger='["console","wandb"]' \
     trainer.project_name='verl_grpo_qwen2.5_1.5b' \
     trainer.experiment_name='grpo_lora_local' \
+    trainer.default_local_dir='/home/user/verl/checkpoints' \
     trainer.n_gpus_per_node=2 \
     trainer.nnodes=1 \
-    trainer.save_freq=20 \
-    trainer.test_freq=5 \
+    trainer.save_freq=50 \
+    trainer.test_freq=10 \
     trainer.total_epochs=15 "$@"
